@@ -9,19 +9,24 @@ import SwiftUI
 import RealityKit
 
 struct ContentView : View {
+    let worldAnchor = try! Experience.loadWorld()
     var body: some View {
-        ARViewContainer().edgesIgnoringSafeArea(.all)
+        ARViewContainer(worldAnchor: worldAnchor).edgesIgnoringSafeArea(.all)
+        VStack{
+            Button("Orbit!") {
+                worldAnchor.notifications.orbitBattery.post();
+            }
+        }
     }
 }
 
 struct ARViewContainer: UIViewRepresentable {
-    
+    let worldAnchor : Experience.World;
     func makeUIView(context: Context) -> ARView {
         
         let arView = ARView(frame: .zero)
         
         // Load the "World" scene from the "Experience" Reality File
-        let worldAnchor = try! Experience.loadWorld()
         
         // Add the box anchor to the scene
         arView.scene.anchors.append(worldAnchor)
