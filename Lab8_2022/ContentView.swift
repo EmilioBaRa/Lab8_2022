@@ -10,9 +10,12 @@ import RealityKit
 
 struct ContentView : View {
     let worldAnchor = try! Experience.loadWorld()
+    @State var hits : Int = 0;
+    
     var body: some View {
-        ARViewContainer(worldAnchor: worldAnchor).edgesIgnoringSafeArea(.all)
+        ARViewContainer(worldAnchor: worldAnchor, hits: $hits).edgesIgnoringSafeArea(.all)
         VStack{
+            Text("Number of Hits: \(hits)")
             Button("Orbit!") {
                 worldAnchor.notifications.orbitBattery.post();
             }
@@ -22,11 +25,16 @@ struct ContentView : View {
 
 struct ARViewContainer: UIViewRepresentable {
     let worldAnchor : Experience.World;
+    @Binding var hits : Int;
+    
     func makeUIView(context: Context) -> ARView {
         
         let arView = ARView(frame: .zero)
         
-        // Load the "World" scene from the "Experience" Reality File
+        self.worldAnchor.actions.soldierToyWasHit.onAction = {
+            entity in print("Toy soldier was Hit")
+            hits+=1;
+        }
         
         // Add the box anchor to the scene
         arView.scene.anchors.append(worldAnchor)
